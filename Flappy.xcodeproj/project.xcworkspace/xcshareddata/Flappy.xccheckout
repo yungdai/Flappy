@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>495E99DD-483D-43D8-B21E-C5FA67C3FD01</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Flappy</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>20D665E4A475E98C4CD8A1F4C2AC94AE62E77EA6</key>
+		<string>https://github.com/yungdai/Flappy.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Flappy.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>20D665E4A475E98C4CD8A1F4C2AC94AE62E77EA6</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/yungdai/Flappy.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>20D665E4A475E98C4CD8A1F4C2AC94AE62E77EA6</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>20D665E4A475E98C4CD8A1F4C2AC94AE62E77EA6</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Flappy</string>
+		</dict>
+	</array>
+</dict>
+</plist>
