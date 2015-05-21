@@ -154,7 +154,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         skyBoundary.physicsBody?.dynamic = false
         
         // setup a timer
-        var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("spawnPipes"), userInfo: nil, repeats: true)
+//        var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("spawnPipes"), userInfo: nil, repeats: true)
        
         
         // add the ground and sky contacts to the screen
@@ -216,65 +216,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeUp.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) - pipeUp.size.height / 2 - gap / 2 + pipeOffset)
         self.addChild(pipeUp)
         
-        
-
-        // moving the background from left to right, then replacing it
-//        var shiftBackground = SKAction.moveByX(-background.size.width, y: 0, duration: 10)
-//        var replaceBackground = SKAction.moveByX(background.size.width, y: 0, duration: 0)
-//        
-//        var movingAndReplacingBackground = SKAction.repeatActionForever(SKAction.sequence([shiftBackground,replaceBackground]))
-//        
-//        for var i:CGFloat = 0; i < 2 + self.frame.size.width/(backgroundImage.size().width * 2); i++ {
-//            // defining background; giving it height and moving width
-//            // set the position fo the background
-//            var movingBackground = SKSpriteNode(texture: backgroundImage)
-//            movingBackground.position = CGPoint(x: backgroundImage.size().width / 2 + backgroundImage.size().width * i, y: CGRectGetMidY(self.frame))
-//            movingBackground.size.height = self.frame.height
-//            movingBackground.runAction(movingAndReplacingBackground)
-//            self.addChild(movingBackground)
-//        }
-        
-        
-        
-//        let pipePair = SKNode()
-//        pipePair.position = CGPointMake( self.frame.size.width + pipeTextureUp.size().width * 2, 0 )
-//        pipePair.zPosition = -10
-//        
-//        let height = UInt32( UInt(self.frame.size.height / 4) )
-//        let y = arc4random() % height + height
-//        
-//        let pipeDown = SKSpriteNode(texture: pipeTextureDown)
-//        pipeDown.setScale(2.0)
-//        pipeDown.position = CGPointMake(0.0, CGFloat(Double(y)) + pipeDown.size.height + CGFloat(verticalPipeGap))
-//        
-//        
-//        pipeDown.physicsBody = SKPhysicsBody(rectangleOfSize: pipeDown.size)
-//        pipeDown.physicsBody?.dynamic = false
-//        pipeDown.physicsBody?.categoryBitMask = pipeCategory
-//        pipeDown.physicsBody?.contactTestBitMask = birdCategory
-//        pipePair.addChild(pipeDown)
-//        
-//        let pipeUp = SKSpriteNode(texture: pipeTextureUp)
-//        pipeUp.setScale(2.0)
-//        pipeUp.position = CGPointMake(0.0, CGFloat(Double(y)))
-//        
-//        pipeUp.physicsBody = SKPhysicsBody(rectangleOfSize: pipeUp.size)
-//        pipeUp.physicsBody?.dynamic = false
-//        pipeUp.physicsBody?.categoryBitMask = pipeCategory
-//        pipeUp.physicsBody?.contactTestBitMask = birdCategory
-//        pipePair.addChild(pipeUp)
-//        
-//        var contactNode = SKNode()
-//        contactNode.position = CGPointMake( pipeDown.size.width + bird.size.width / 2, CGRectGetMidY( self.frame ) )
-//        contactNode.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake( pipeUp.size.width, self.frame.size.height ))
-//        contactNode.physicsBody?.dynamic = false
-//        contactNode.physicsBody?.categoryBitMask = scoreCategory
-//        contactNode.physicsBody?.contactTestBitMask = birdCategory
-//        pipePair.addChild(contactNode)
-//        
-//        pipePair.runAction(movePipesAndRemove)
-//        pipes.addChild(pipePair)
-//        
     }
 
     
@@ -298,6 +239,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             // if you are touching inside the bounding box of the startGame Text
             if startGameText.containsPoint(location) {
                 println("Start is being tapped")
+                // when I click the startGameText I start the timer and spawnPipes method
+                var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("spawnPipes"), userInfo: nil, repeats: true)
+                self.startGameText.removeFromParent()
+//                self.addChild(pipeDown)
+//                self.addChild(pipeUp)
 
             }
         }
