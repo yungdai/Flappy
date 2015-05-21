@@ -20,6 +20,11 @@ class GameScene: SKScene {
     var startGround = SKNode()
     let startGameText = SKLabelNode(fontNamed: "System")
     
+    // setup the score
+    var scoreLabel = SKLabelNode()
+    
+    
+    
     // define an action for the pipes movmement
     var movePipesAndRemovePipes: SKAction!
     
@@ -80,11 +85,11 @@ class GameScene: SKScene {
         movePipesAndRemovePipes = SKAction.sequence([movePipes, removePipes])
         
         // spawn the pipes
-        let spawn = SKAction.runBlock({() in self.spawnPipes()})
-        let delay = SKAction.waitForDuration(NSTimeInterval(2.0))
-        let spawnThenDelay = SKAction.sequence([spawn, delay])
-        let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
-        self.runAction(spawnThenDelayForever)
+//        let spawn = SKAction.runBlock({() in self.spawnPipes()})
+//        let delay = SKAction.waitForDuration(NSTimeInterval(2.0))
+//        let spawnThenDelay = SKAction.sequence([spawn, delay])
+//        let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
+//        self.runAction(spawnThenDelayForever)
         
 
         // add a backbground image and use BLF for the filtering
@@ -138,6 +143,15 @@ class GameScene: SKScene {
             self.addChild(movingGround)
         }
         
+        
+        // setup the score label
+        scoreLabel.fontName = "04b_19"
+        scoreLabel.fontSize = 100
+        scoreLabel.text = "0"
+        scoreLabel.position = CGPointMake(CGRectGetMidX(self.frame), self.frame.size.height / 2 + 200)
+        scoreLabel.zPosition = 11
+        self.addChild(scoreLabel)
+            
         // set the start ground position
         startGround.position = CGPointMake(0, 0)
         
@@ -212,6 +226,9 @@ class GameScene: SKScene {
         for touch : AnyObject in touches {
             let location = touch.locationInNode(self)
 
+            if bird.containsPoint(location) {
+
+            }
 
             
             // if you are touching inside the bounding box of the startGame Text
