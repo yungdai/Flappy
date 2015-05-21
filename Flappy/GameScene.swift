@@ -8,7 +8,9 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is for the contat physics
+
+{
     
     // declariations of different elements on the scren
     var bird = SKSpriteNode()
@@ -17,8 +19,10 @@ class GameScene: SKScene {
     var pipeUp = SKSpriteNode()
     var ground = SKSpriteNode()
     var pipes = SKNode()
-    var startGround = SKNode()
+    var groundBoundary = SKNode()
+    var skyBoundary = SKNode()
     let startGameText = SKLabelNode(fontNamed: "System")
+    var moving = SKNode()
     
     // setup the score
     var scoreLabel = SKLabelNode()
@@ -37,6 +41,10 @@ class GameScene: SKScene {
         birdTexture.filteringMode = .Linear
         birdTexture2.filteringMode = .Linear
         
+        
+        // setup world physics
+        self.physicsWorld.gravity = CGVectorMake(0.0, -5.0)
+        self.physicsWorld.contactDelegate = self
   
         
         // animation for the bird
@@ -69,27 +77,6 @@ class GameScene: SKScene {
         
         // set the position of the bird to the forground
         bird.zPosition = 10
-        
-        
-        // assignging the textures to the two different pipes then filter the texture with Bi-linear Filtering (BLF)
-        let pipeDownTexture = SKTexture(imageNamed: "pipe1")
-        let pipeUpTexture = SKTexture(imageNamed: "pipe2")
-        pipeDownTexture.filteringMode = .Linear
-        pipeUpTexture.filteringMode = .Linear
-        
-
-        // create the pipes movement actions
-        let distanceToMove = CGFloat(self.frame.size.width + 2.0 * pipeUpTexture.size().width)
-        let movePipes = SKAction.moveByX(-distanceToMove, y:0.0, duration:NSTimeInterval(0.01 * distanceToMove))
-        let removePipes = SKAction.removeFromParent()
-        movePipesAndRemovePipes = SKAction.sequence([movePipes, removePipes])
-        
-        // spawn the pipes
-//        let spawn = SKAction.runBlock({() in self.spawnPipes()})
-//        let delay = SKAction.waitForDuration(NSTimeInterval(2.0))
-//        let spawnThenDelay = SKAction.sequence([spawn, delay])
-//        let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
-//        self.runAction(spawnThenDelayForever)
         
 
         // add a backbground image and use BLF for the filtering
@@ -152,17 +139,27 @@ class GameScene: SKScene {
         scoreLabel.zPosition = 11
         self.addChild(scoreLabel)
             
-        // set the start ground position
-        startGround.position = CGPointMake(0, 0)
+        // set the ground bondary position
+        groundBoundary.position = CGPointMake(0, 0)
         
         // set the ground physics
-        startGround.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, self.frame.size.height * 0.75))
-        startGround.physicsBody?.dynamic = false
+        groundBoundary.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, self.frame.size.height * 0.3))
+        groundBoundary.physicsBody?.dynamic = false
         
-    
+        // set the sky boundary position
+        skyBoundary.position = CGPointMake(0, CGRectGetMaxY(self.frame))
         
-        // add the ground to the screen
-        self.addChild(startGround)
+        // set the sky boundary physics
+        skyBoundary.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(self.frame.size.width, self.frame.size.height * 0.2))
+        skyBoundary.physicsBody?.dynamic = false
+        
+        // setup a timer
+        var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("spawnPipes"), userInfo: nil, repeats: true)
+       
+        
+        // add the ground and sky contacts to the screen
+        self.addChild(groundBoundary)
+        self.addChild(skyBoundary)
 
         // draw the bird onto the screen
         self.addChild(bird)
@@ -171,7 +168,74 @@ class GameScene: SKScene {
     }
     
     // funcation for spawning pipes
-//    func spawnPipes() {
+    func spawnPipes() {
+        
+        
+        // creating a gap between the pipe
+        var gap = bird.size.height * 4
+        
+        // movement amount
+        var movementAmount = arc4random() % UInt32(self.frame.size.height / 2)
+        
+        // gap offset for the pipe
+        var pipeOffset = CGFloat(movementAmount) - self.frame.size.height / 4
+        
+        
+        
+        //  move the pipes
+        var shiftPipes = SKAction.moveByX(-self.frame.width * 2, y: 0, duration: NSTimeInterval(self.frame.size.width / 100))
+        var removePipes = SKAction.removeFromParent()
+        
+        // move and remove pipes
+        var moveAndRemovePipes = SKAction.repeatActionForever(SKAction.sequence([shiftPipes, removePipes]))
+        
+        
+        // creaeting the pipes
+        let pipeDownTexture = SKTexture(imageNamed: "pipe1")
+        let pipeUpTexture = SKTexture(imageNamed: "pipe2")
+        pipeDownTexture.filteringMode = .Linear
+        pipeUpTexture.filteringMode = .Linear
+        pipeDown = SKSpriteNode(texture: pipeDownTexture)
+        pipeUp = SKSpriteNode(texture: pipeUpTexture)
+        pipeDown.zPosition = 10
+        pipeUp.zPosition = 10
+        
+
+
+        // drawing a set of pipes onto the screen
+
+        pipeDown.runAction(moveAndRemovePipes)
+        pipeDown.physicsBody = SKPhysicsBody(rectangleOfSize: pipeDown.size)
+        pipeDown.physicsBody?.dynamic = false
+        pipeDown.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipeDown.size.height / 2 + gap / 2 + pipeOffset)
+        self.addChild(pipeDown)
+
+        pipeUp.runAction(moveAndRemovePipes)
+        pipeUp.physicsBody = SKPhysicsBody(rectangleOfSize: pipeUp.size)
+        pipeUp.physicsBody?.dynamic = false
+        pipeUp.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) - pipeUp.size.height / 2 - gap / 2 + pipeOffset)
+        self.addChild(pipeUp)
+        
+        
+
+        // moving the background from left to right, then replacing it
+//        var shiftBackground = SKAction.moveByX(-background.size.width, y: 0, duration: 10)
+//        var replaceBackground = SKAction.moveByX(background.size.width, y: 0, duration: 0)
+//        
+//        var movingAndReplacingBackground = SKAction.repeatActionForever(SKAction.sequence([shiftBackground,replaceBackground]))
+//        
+//        for var i:CGFloat = 0; i < 2 + self.frame.size.width/(backgroundImage.size().width * 2); i++ {
+//            // defining background; giving it height and moving width
+//            // set the position fo the background
+//            var movingBackground = SKSpriteNode(texture: backgroundImage)
+//            movingBackground.position = CGPoint(x: backgroundImage.size().width / 2 + backgroundImage.size().width * i, y: CGRectGetMidY(self.frame))
+//            movingBackground.size.height = self.frame.height
+//            movingBackground.runAction(movingAndReplacingBackground)
+//            self.addChild(movingBackground)
+//        }
+        
+        
+        
 //        let pipePair = SKNode()
 //        pipePair.position = CGPointMake( self.frame.size.width + pipeTextureUp.size().width * 2, 0 )
 //        pipePair.zPosition = -10
@@ -211,7 +275,7 @@ class GameScene: SKScene {
 //        pipePair.runAction(movePipesAndRemove)
 //        pipes.addChild(pipePair)
 //        
-//    }
+    }
 
     
 
@@ -234,6 +298,7 @@ class GameScene: SKScene {
             // if you are touching inside the bounding box of the startGame Text
             if startGameText.containsPoint(location) {
                 println("Start is being tapped")
+
             }
         }
     }
