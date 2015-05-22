@@ -7,6 +7,8 @@
 //
 
 import SpriteKit
+import AVFoundation
+
 
 class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is for the contat physics
 
@@ -26,6 +28,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     var moving = SKNode()
     var pipes = SKNode()
     var restart = Bool()
+    var flapSound = AVAudioPlayer()
+    var gameOverSound = AVAudioPlayer()
   
     
     // setup the score
@@ -67,11 +71,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipes = SKNode()
         moving.addChild(pipes)
         
-  
+        // set up the audio
+        audioPreparation()
+        
+        // setup the sparkle parti
         
         // animation for the bird
         var animation = SKAction.animateWithTextures([birdTexture, birdTexture2], timePerFrame: 0.2)
         var makeFlap = SKAction.repeatActionForever(animation)
+        
+
         
         // start game setup
         startGameText.text = "Let's Get Flapping!"
@@ -284,11 +293,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         bird.physicsBody?.velocity = CGVectorMake( 0, 0 )
         bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
         bird.speed = 1.0
+        bird.physicsBody?.allowsRotation = false
         bird.zRotation = 0.0
         
         // reset all the pipes by removing them fromt the screen
         pipes.removeAllChildren()
-        self.gameOverText.removeFromParent()
         
         // reset score
         score = 0
@@ -314,6 +323,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     }
     
     
+    // functon for flapping sound
+    
+    func audioPreparation() {
+        // set the soudn file name and extension
+        var flap  = NSBundle.mainBundle().pathForResource("flap", ofType: "wav")
+//        var march = NSBundle.mainBundle().pathForResource("march", ofType: "mp3")
+        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+        AVAudioSession.sharedInstance().setActive(true, error: nil)
+        
+        var error:NSError?
+        flapSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: flap!), error: &error)
+        flapSound.prepareToPlay()
+        
+//        gameOverSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: march!), error: &error)
+//        gameOverSound.prepareToPlay()
+//        
+    }
+    
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         /* Called when a touch begins */
         // set how high you want flappy to go
@@ -326,6 +353,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                 let location = touch.locationInNode(self)
                 bird.physicsBody?.velocity = CGVectorMake(0, 0)
                 bird.physicsBody?.applyImpulse(CGVectorMake(0, 80))
+                
+                // play a flapping sound each time the bird is touched
+                flapSound.play()
+                
+                
+    
                 if bird.containsPoint(location) {
 
                 }
@@ -354,11 +387,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                 
 
                 }
+                
+                if gameOverText.containsPoint(location) {
+                    println("Gameover is being touched")
+                    restart = true
+                    self.gameOverText.removeFromParent()
+                }
             }
         } else if restart {
             self.resetScene()
         }
     }
+    
+    
     
     // new function to detech when two physicsBody's touch each other
     func didBeginContact(contact: SKPhysicsContact) {
@@ -368,13 +409,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             println("Bird has contact with a world object")
             // stop moving when you collide
             moving.speed = 0
-            
             bird.physicsBody?.collisionBitMask = worldCategory
-            bird.runAction(SKAction.rotateByAngle(CGFloat(M_PI) * CGFloat(bird.position.y) * 0.01, duration:1), completion:{self.bird.speed = 0 })
-            self.addChild(gameOverText)
+            // show the gameover text
+//            self.addChild(gameOverText)
             restart = true
-            // draw the start game to the scene
-
+            gameOverSound.play()
+            
         }
 
     }
