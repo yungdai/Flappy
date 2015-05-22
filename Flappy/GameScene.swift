@@ -22,6 +22,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     var ground = SKSpriteNode()
     var groundBoundary = SKNode()
     var skyBoundary = SKNode()
+    var playButton = SKSpriteNode()
     let startGameText = SKLabelNode(fontNamed: "System")
     let gameOverText = SKLabelNode(fontNamed: "System")
     let sparkEmitter = SKEmitterNode(fileNamed: "sparkles")
@@ -100,7 +101,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         gameOverText.hidden = true
         
         // draw the start game to the scene
-        self.addChild(startGameText)
+//        self.addChild(startGameText)
         
         
         // assigning the texture to the bird sprite node
@@ -123,9 +124,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         // set the position of the bird to the forground
         bird.zPosition = 10
         
-
+        // add playbutton image
+        let playButtonImage = SKTexture(imageNamed: "play_button")
+        playButtonImage.filteringMode = .Linear
+        playButton = SKSpriteNode(texture: playButtonImage)
+        playButton.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        playButton.zPosition = 15
+        self.addChild(playButton)
         
-
+        
         // add a backbground image and use BLF for the filtering
         let backgroundImage = SKTexture(imageNamed: "colored_castle")
         backgroundImage.filteringMode = .Linear
@@ -350,13 +357,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         if moving.speed > 0 {
             gameOverText.hidden = true
             println("Flappy is flying")
-//            if score > 5 {
-//                moving.speed = moving.speed + 5
-//            } else if score > 20 {
-//                moving.speed = moving.speed + 5
-//            } else if score > 30 {
-//                moving.speed = moving.speed + 5
-//            }
+            if score > 5 {
+                moving.speed = moving.speed + 2
+            } else if score > 20 {
+                moving.speed = moving.speed + 2
+            } else if score > 30 {
+                moving.speed = moving.speed + 2
+            }
         
             for touch : AnyObject in touches {
                 let location = touch.locationInNode(self)
@@ -375,7 +382,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
 
             
                 // if you are touching inside the bounding box of the startGame Text
-                if startGameText.containsPoint(location) {
+                if playButton.containsPoint(location) {
                     println("Start is being tapped")
                 
                     let birdTexture = SKTexture(imageNamed: "wingdown")
@@ -393,15 +400,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                 
                     // test to see if the bird hit the pipe
                     bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
+                    self.timer? .invalidate()
                     self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
-                    self.startGameText.removeFromParent()
+                    self.playButton.removeFromParent()
 
                 }
                 
-                if gameOverText.containsPoint(location) {
-                    println("Gameover is being touched")
-                    restart = true
-                }
+
             }
         } else if restart {
             self.resetScene()
@@ -417,7 +422,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         if (contact.bodyA.categoryBitMask & worldCategory) == worldCategory || (contact.bodyB.categoryBitMask & worldCategory) == worldCategory {
             println("Bird has contact with a world object")
             // stop moving when you collide
+            self.timer?.invalidate()
             moving.speed = 0
+
             bird.physicsBody?.collisionBitMask = worldCategory
             gameOverText.hidden = false
             gameOverSound.play()
@@ -425,7 +432,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             if (birdSpark == nil) {
                 bird.addChild(sparkEmitter)
             }
-            self.timer?.invalidate()
             restart = true
 
         }
