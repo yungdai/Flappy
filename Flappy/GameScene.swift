@@ -21,6 +21,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     var groundBoundary = SKNode()
     var skyBoundary = SKNode()
     let startGameText = SKLabelNode(fontNamed: "System")
+    let gameOverText = SKLabelNode(fontNamed: "System")
   
     
     // setup the score
@@ -63,6 +64,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         startGameText.position = CGPoint(x: self.frame.size.width * 0.55, y: CGRectGetMidY(self.frame))
         startGameText.zPosition = 15
         
+        
+        // game over text setup
+        gameOverText.text = "Game Over!"
+        gameOverText.fontSize = 30
+        gameOverText.position = CGPoint(x: self.frame.size.width * 0.55, y: CGRectGetMidY(self.frame))
+        gameOverText.zPosition = 15
+        
         // draw the start game to the scene
         self.addChild(startGameText)
         
@@ -75,37 +83,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         // now run it's animation
         bird.runAction(makeFlap)
-        
-        // adding physics for Flappy
-
-        // draw a custom physics body using a polygonline, you can get your own from these two websites
-        // http://insyncapp.net/SKPhysicsBodyPathGenerator.html
-        // to convert that code to swift http://avionicsdev.esy.es/article.php?id=13&page=1
-        
-        let path: CGMutablePathRef = CGPathCreateMutable()
-        
-
-        MoveToPoint(path, x: 24, y: 57, node: bird)
-        AddLineToPoint(path, x: 7, y: 26, node: bird)
-        AddLineToPoint(path, x: 18, y: 9, node: bird)
-        AddLineToPoint(path, x: 55, y: 16, node: bird)
-        AddLineToPoint(path, x: 61, y: 24, node: bird)
-        AddLineToPoint(path, x: 46, y: 41, node: bird);
-        AddLineToPoint(path, x: 39, y: 52, node: bird)
-        AddLineToPoint(path, x: 30, y: 56, node: bird)
-        
-        CGPathCloseSubpath(path)
-
-        bird.physicsBody = SKPhysicsBody(polygonFromPath: path)
-        bird.physicsBody?.dynamic = true
-        bird.physicsBody?.allowsRotation = false
-        // assgining collsionBitMask to the bird
-        bird.physicsBody?.categoryBitMask = birdCategory
-        bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
-        
-        // test to see if the bird hit the pipe
-        bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
-
         
         // set the position of the bird to the forground
         bird.zPosition = 10
@@ -232,6 +209,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeDown.zPosition = 10
         pipeUp.zPosition = 10
         pipePair.zPosition = 10
+        pipePair.physicsBody?.categoryBitMask = pipeCategory | worldCategory
         
         
         // drawing a set of pipes onto the screen
@@ -239,7 +217,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeDown.physicsBody?.dynamic = false
         pipeDown.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipeDown.size.height / 2 + gap / 2 + pipeOffset)
         // if the pipe contacts the bird
-        pipeDown.physicsBody?.categoryBitMask = pipeCategory
+        pipeDown.physicsBody?.categoryBitMask = pipeCategory | worldCategory
         pipeDown.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(pipeDown)
 
@@ -248,20 +226,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeUp.physicsBody?.dynamic = false
         pipeUp.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) - pipeUp.size.height / 2 - gap / 2 + pipeOffset)
         // if the pipe contacts the bird
-        pipeUp.physicsBody?.categoryBitMask = pipeCategory
+        pipeUp.physicsBody?.categoryBitMask = pipeCategory | worldCategory
         pipeUp.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(pipeUp)
-        
-        var contactNode = SKNode()
-
-        contactNode.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(pipeUp.size.width, self.frame.size.height))
-        contactNode.position = CGPoint(x: CGRectGetMidX(self.frame) + self.size.width, y: CGRectGetMidY(self.frame) - pipeUp.size.height  / 2 - gap / 2 + pipeOffset)
-        contactNode.physicsBody?.dynamic = false
-        contactNode.physicsBody?.categoryBitMask = scoreCategory
-        contactNode.physicsBody?.contactTestBitMask = birdCategory
-        pipePair.addChild(contactNode)
-        
-        
         
         
         pipePair.runAction(moveAndRemovePipes)
@@ -271,21 +238,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     
     
     // functions for the bird roation
-    
-    func clamp(min: CGFloat, max: CGFloat, value: CGFloat) -> CGFloat {
-        if( value > max ) {
-            return max
-        } else if( value < min ) {
-            return min
-        } else {
-            return value
-        }
-    }
-    
-    override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
-        bird.zRotation = self.clamp( -1, max: 0.5, value: bird.physicsBody!.velocity.dy * ( bird.physicsBody!.velocity.dy < 0 ? 0.003 : 0.001 ) )
-    }
+//    
+//    func clamp(min: CGFloat, max: CGFloat, value: CGFloat) -> CGFloat {
+//        if( value > max ) {
+//            return max
+//        } else if( value < min ) {
+//            return min
+//        } else {
+//            return value
+//        }
+//    }
+//    
+//    override func update(currentTime: CFTimeInterval) {
+//        /* Called before each frame is rendered */
+//        bird.zRotation = self.clamp( -1, max: 0.5, value: bird.physicsBody!.velocity.dy * ( bird.physicsBody!.velocity.dy < 0 ? 0.003 : 0.001 ) )
+//    }
 
     
     // function to reset the scene
@@ -337,6 +304,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             if startGameText.containsPoint(location) {
                 println("Start is being tapped")
                 // when I click the startGameText I start the timer and spawnPipes method
+                // adding physics for Flappy
+                
+                // draw a custom physics body using a polygonline, you can get your own from these two websites
+                // http://insyncapp.net/SKPhysicsBodyPathGenerator.html
+                // to convert that code to swift http://avionicsdev.esy.es/article.php?id=13&page=1
+                
+                let path: CGMutablePathRef = CGPathCreateMutable()
+                
+                
+                MoveToPoint(path, x: 24, y: 57, node: bird)
+                AddLineToPoint(path, x: 7, y: 26, node: bird)
+                AddLineToPoint(path, x: 18, y: 9, node: bird)
+                AddLineToPoint(path, x: 55, y: 16, node: bird)
+                AddLineToPoint(path, x: 61, y: 24, node: bird)
+                AddLineToPoint(path, x: 46, y: 41, node: bird);
+                AddLineToPoint(path, x: 39, y: 52, node: bird)
+                AddLineToPoint(path, x: 30, y: 56, node: bird)
+                
+                CGPathCloseSubpath(path)
+                
+                bird.physicsBody = SKPhysicsBody(polygonFromPath: path)
+                bird.physicsBody?.dynamic = true
+                bird.physicsBody?.allowsRotation = false
+                // assgining collsionBitMask to the bird
+                bird.physicsBody?.categoryBitMask = birdCategory
+                bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
+                
+                // test to see if the bird hit the pipe
+                bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
                 var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("spawnPipes"), userInfo: nil, repeats: true)
                 self.startGameText.removeFromParent()
                 
@@ -347,6 +343,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     
     // new function to detech when two physicsBody's touch each other
     func didBeginContact(contact: SKPhysicsContact) {
+        
+        if (contact.bodyA.categoryBitMask & worldCategory) == worldCategory {
+            println("Bird has contact with a world object")
+            // start game setup
+
+            
+            // draw the start game to the scene
+
+        }
 
     }
 
