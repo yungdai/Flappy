@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>495E99DD-483D-43D8-B21E-C5FA67C3FD01</string>
 	<key>IDESourceControlProjectName</key>
-	<string>Flappy</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>20D665E4A475E98C4CD8A1F4C2AC94AE62E77EA6</key>
 		<string>https://github.com/yungdai/Flappy.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Flappy.xcodeproj</string>
+	<string>Flappy.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>20D665E4A475E98C4CD8A1F4C2AC94AE62E77EA6</key>

@@ -80,7 +80,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         var animation = SKAction.animateWithTextures([birdTexture, birdTexture2], timePerFrame: 0.2)
         var makeFlap = SKAction.repeatActionForever(animation)
         
-
         
         // start game setup
         startGameText.text = "Let's Get Flapping, tap me to play!"
@@ -373,12 +372,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                 
                 // play a flapping sound each time the bird is touched
                 flapSound.play()
-                
-                
-    
-                if bird.containsPoint(location) {
-
-                }
 
             
                 // if you are touching inside the bounding box of the startGame Text
@@ -401,6 +394,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                     // test to see if the bird hit the pipe
                     bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
                     self.timer? .invalidate()
+           
                     self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
                     self.playButton.removeFromParent()
 
