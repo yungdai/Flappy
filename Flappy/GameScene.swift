@@ -368,14 +368,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         if moving.speed > 0 {
             gameOverText.hidden = true
             println("Flappy is flying")
-//            if score > 5 {
-//                moving.speed = moving.speed + 2
-//            } else if score > 20 {
-//                moving.speed = moving.speed + 2
-//            } else if score > 30 {
-//                moving.speed = moving.speed + 2
-//            }
-//        
+            if score == 5 {
+                moving.speed++
+            } else if score == 20 {
+                moving.speed++
+            } else if score == 30 {
+                moving.speed++
+            }
+        
             for touch : AnyObject in touches {
                 let location = touch.locationInNode(self)
                 bird.physicsBody?.velocity = CGVectorMake(0, 0)
@@ -426,13 +426,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         
-        if contact.bodyA.categoryBitMask == scoreCategory || contact.bodyB.categoryBitMask == scoreCategory {
+        if (contact.bodyA.categoryBitMask & scoreCategory) == scoreCategory || (contact.bodyB.categoryBitMask & scoreCategory) == scoreCategory {
             score++
             scoreLabel.text = "\(score)"
             println("Scored")
         }
         
-        if contact.bodyA.categoryBitMask  == worldCategory || contact.bodyB.categoryBitMask == worldCategory {
+        if (contact.bodyA.categoryBitMask & worldCategory) == worldCategory || (contact.bodyB.categoryBitMask & worldCategory) == worldCategory {
             println("Bird has contact with a world object")
             // stop moving when you collide
             self.timer?.invalidate()
@@ -450,5 +450,4 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         }
 
     }
-
 }
