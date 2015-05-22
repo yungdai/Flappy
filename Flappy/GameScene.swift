@@ -47,6 +47,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         let birdTexture2 = SKTexture(imageNamed: "wingup")
         birdTexture.filteringMode = .Linear
         birdTexture2.filteringMode = .Linear
+  
         
         
         // setup world physics
@@ -80,6 +81,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         // set the positio of the bird
         bird.position = CGPoint(x: self.frame.size.width * 0.15, y: self.frame.size.height * 0.6)
+    
         
         // now run it's animation
         bird.runAction(makeFlap)
@@ -180,7 +182,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         var gap = bird.size.height * 2
         
         // movement amount
-        var movementAmount = arc4random() % UInt32(self.frame.size.height / 5)
+        var movementAmount = arc4random() % UInt32(self.frame.size.height / 2)
         
         // gap offset for the pipe
         var pipeOffset = CGFloat(movementAmount) - self.frame.size.height / 3.5
@@ -303,28 +305,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             // if you are touching inside the bounding box of the startGame Text
             if startGameText.containsPoint(location) {
                 println("Start is being tapped")
-                // when I click the startGameText I start the timer and spawnPipes method
-                // adding physics for Flappy
                 
-                // draw a custom physics body using a polygonline, you can get your own from these two websites
-                // http://insyncapp.net/SKPhysicsBodyPathGenerator.html
-                // to convert that code to swift http://avionicsdev.esy.es/article.php?id=13&page=1
+                let birdTexture = SKTexture(imageNamed: "wingdown")
+                let birdTexture2 = SKTexture(imageNamed: "wingup")
+                birdTexture.filteringMode = .Linear
+                birdTexture2.filteringMode = .Linear
                 
-                let path: CGMutablePathRef = CGPathCreateMutable()
-                
-                
-                MoveToPoint(path, x: 24, y: 57, node: bird)
-                AddLineToPoint(path, x: 7, y: 26, node: bird)
-                AddLineToPoint(path, x: 18, y: 9, node: bird)
-                AddLineToPoint(path, x: 55, y: 16, node: bird)
-                AddLineToPoint(path, x: 61, y: 24, node: bird)
-                AddLineToPoint(path, x: 46, y: 41, node: bird);
-                AddLineToPoint(path, x: 39, y: 52, node: bird)
-                AddLineToPoint(path, x: 30, y: 56, node: bird)
-                
-                CGPathCloseSubpath(path)
-                
-                bird.physicsBody = SKPhysicsBody(polygonFromPath: path)
+                bird.physicsBody = SKPhysicsBody(texture: birdTexture, size: CGSize(width: birdTexture.size().width, height: birdTexture.size().height))
                 bird.physicsBody?.dynamic = true
                 bird.physicsBody?.allowsRotation = false
                 // assgining collsionBitMask to the bird
@@ -343,6 +330,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     
     // new function to detech when two physicsBody's touch each other
     func didBeginContact(contact: SKPhysicsContact) {
+        let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
         if (contact.bodyA.categoryBitMask & worldCategory) == worldCategory {
             println("Bird has contact with a world object")
