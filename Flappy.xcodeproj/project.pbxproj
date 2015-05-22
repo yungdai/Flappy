@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A8245041B0F729300308017 /* sparkles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1A8245021B0F729300308017 /* sparkles.sks */; };
+		1A8245051B0F729300308017 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A8245031B0F729300308017 /* spark.png */; };
 		1AEE2A4E1B0CCEA30032F45A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEE2A4D1B0CCEA30032F45A /* AppDelegate.swift */; };
 		1AEE2A501B0CCEA30032F45A /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1AEE2A4F1B0CCEA30032F45A /* GameScene.sks */; };
 		1AEE2A521B0CCEA30032F45A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEE2A511B0CCEA30032F45A /* GameScene.swift */; };
@@ -28,6 +30,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1A8245021B0F729300308017 /* sparkles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = sparkles.sks; sourceTree = "<group>"; };
+		1A8245031B0F729300308017 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		1AEE2A481B0CCEA30032F45A /* Flappy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flappy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AEE2A4C1B0CCEA30032F45A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AEE2A4D1B0CCEA30032F45A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -89,6 +93,8 @@
 				1AEE2A581B0CCEA30032F45A /* Images.xcassets */,
 				1AEE2A5A1B0CCEA30032F45A /* LaunchScreen.xib */,
 				1AEE2A4B1B0CCEA30032F45A /* Supporting Files */,
+				1A8245021B0F729300308017 /* sparkles.sks */,
+				1A8245031B0F729300308017 /* spark.png */,
 			);
 			path = Flappy;
 			sourceTree = "<group>";
@@ -198,6 +204,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A8245041B0F729300308017 /* sparkles.sks in Resources */,
+				1A8245051B0F729300308017 /* spark.png in Resources */,
 				1AEE2A5C1B0CCEA30032F45A /* LaunchScreen.xib in Resources */,
 				1AEE2A591B0CCEA30032F45A /* Images.xcassets in Resources */,
 				1AEE2A501B0CCEA30032F45A /* GameScene.sks in Resources */,
