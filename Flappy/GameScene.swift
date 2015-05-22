@@ -93,9 +93,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         self.addChild(gameOverText)
         gameOverText.hidden = true
-        
-        // draw the start game to the scene
-//        self.addChild(startGameText)
+
         
         
         // assigning the texture to the bird sprite node
@@ -308,19 +306,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     
     }
     
-    // new functions for the custom polygon path, I have to multiply the values by 2 to make sure that the polygone matches the size of my SKNodeSprite
-    func offset(node: SKSpriteNode, isX: Bool)->CGFloat {
-        return isX ? node.frame.size.width * node.anchorPoint.x : node.frame.size.height * node.anchorPoint.y
-    }
-    
-    func AddLineToPoint(path: CGMutablePath!, x: CGFloat, y: CGFloat, node: SKSpriteNode) {
-        CGPathAddLineToPoint(path, nil, (x * 2) - offset(node, isX: true), (y * 2) - offset(node, isX: false))
-    }
-    
-    func MoveToPoint(path: CGMutablePath!, x: CGFloat, y: CGFloat, node: SKSpriteNode) {
-        CGPathMoveToPoint(path, nil, (x * 2) - offset(node, isX: true), (y * 2) - offset(node, isX: false))
-    }
-    
     
     // functon for flapping sound
     
@@ -337,16 +322,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         gameOverSound.prepareToPlay()
 
     }
-    
-    func gameOverAudioPrep() {
-        var march = NSBundle.mainBundle().pathForResource("march", ofType: "mp3")
-        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
-        AVAudioSession.sharedInstance().setActive(true, error: nil)
-        var error:NSError?
-        gameOverSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: march!), error: &error)
-        gameOverSound.prepareToPlay()
-        
-    }
+
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         /* Called when a touch begins */
@@ -391,7 +367,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                 
                     // test to see if the bird hit the pipe
                     bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory | scoreCategory
-                    self.timer? .invalidate()
+                    
+                    
+                    // check if the timer is one, if so invalidate it
+                    self.timer?.invalidate()
            
                     self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
                     self.playButton.removeFromParent()
