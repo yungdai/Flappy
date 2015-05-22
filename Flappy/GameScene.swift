@@ -46,7 +46,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     let scoreCategory: UInt32 = 1 << 3
     
     
-    
     // define an action for the pipes movmement
     var movePipesAndRemovePipes: SKAction!
     
@@ -59,8 +58,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         let birdTexture2 = SKTexture(imageNamed: "wingup")
         birdTexture.filteringMode = .Linear
         birdTexture2.filteringMode = .Linear
-  
-        
         
         // setup world physics
         self.physicsWorld.gravity = CGVectorMake(0.0, -5.0)
@@ -80,14 +77,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         var animation = SKAction.animateWithTextures([birdTexture, birdTexture2], timePerFrame: 0.2)
         var makeFlap = SKAction.repeatActionForever(animation)
         
-        
         // start game setup
         startGameText.text = "Let's Get Flapping, tap me to play!"
         startGameText.fontSize = 30
         startGameText.fontColor = UIColor.blackColor()
         startGameText.position = CGPoint(x: self.frame.size.width * 0.55, y: CGRectGetMidY(self.frame))
         startGameText.zPosition = 15
-        
         
         // game over text setup
         gameOverText.text = "Game Over Tap to Restart!"
@@ -231,12 +226,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         let shiftPipes = SKAction.moveByX(-self.frame.width * 2, y: 0, duration: NSTimeInterval(self.frame.size.width / 100))
         let removePipes = SKAction.removeFromParent()
         
-//        let  scoreValue = SKAction.runBlock { () -> Void in
-//            self.score++
-//            self.scoreLabel.text = "\(self.score)"
-//            self.scoreLabel.zPosition = 15
-//        }
-        
         // move and remove pipes
         var moveAndRemovePipes = SKAction.repeatActionForever(SKAction.sequence([shiftPipes, removePipes]))
         
@@ -275,7 +264,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         
         // draw the box for scoring
-        
         var scoreBox = SKNode()
         scoreBox.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipeOffset)
         scoreBox.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(pipeDown.size.width, gap))
@@ -340,8 +328,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         // set the soudn file name and extension
         var flap  = NSBundle.mainBundle().pathForResource("flap", ofType: "wav")
         var march = NSBundle.mainBundle().pathForResource("march", ofType: "wav")
-//        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
-//        AVAudioSession.sharedInstance().setActive(true, error: nil)
         
         var error:NSError?
         flapSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: flap!), error: &error)
@@ -349,7 +335,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         gameOverSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: march!), error: &error)
         gameOverSound.prepareToPlay()
-//
+
     }
     
     func gameOverAudioPrep() {
@@ -420,11 +406,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     }
     
     
-    
     // new function to detect when two physicsBody's touch each other
     func didBeginContact(contact: SKPhysicsContact) {
-        let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
-        
         
         if (contact.bodyA.categoryBitMask & scoreCategory) == scoreCategory || (contact.bodyB.categoryBitMask & scoreCategory) == scoreCategory {
             score++
