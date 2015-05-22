@@ -14,7 +14,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
 
 {
     
-    // declariations of different elements on the scren
+    // declariations of different elements on the screen
     var bird = SKSpriteNode()
     var background = SKSpriteNode()
     var pipeDown = SKSpriteNode()
@@ -26,10 +26,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     let gameOverText = SKLabelNode(fontNamed: "System")
     let sparkEmitter = SKEmitterNode(fileNamed: "sparkles")
     var moving = SKNode()
+    var gameOverScene = SKNode()
     var pipes = SKNode()
     var restart = Bool()
     var flapSound = AVAudioPlayer()
     var gameOverSound = AVAudioPlayer()
+    var timer: NSTimer?
   
     
     // setup the score
@@ -52,7 +54,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         /* Setup your scene here */
         
         restart = false
-        
         let birdTexture = SKTexture(imageNamed: "wingdown")
         let birdTexture2 = SKTexture(imageNamed: "wingup")
         birdTexture.filteringMode = .Linear
@@ -74,8 +75,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         // set up the audio
         audioPreparation()
         
-        // setup the sparkle parti
-        
         // animation for the bird
         var animation = SKAction.animateWithTextures([birdTexture, birdTexture2], timePerFrame: 0.2)
         var makeFlap = SKAction.repeatActionForever(animation)
@@ -83,17 +82,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
 
         
         // start game setup
-        startGameText.text = "Let's Get Flapping!"
+        startGameText.text = "Let's Get Flapping, tap me to play!"
         startGameText.fontSize = 30
+        startGameText.fontColor = UIColor.blackColor()
         startGameText.position = CGPoint(x: self.frame.size.width * 0.55, y: CGRectGetMidY(self.frame))
         startGameText.zPosition = 15
         
         
         // game over text setup
-        gameOverText.text = "Game Over!"
+        gameOverText.text = "Game Over Tap to Restart!"
+        gameOverText.fontColor = UIColor.blackColor()
         gameOverText.fontSize = 30
         gameOverText.position = CGPoint(x: self.frame.size.width * 0.55, y: CGRectGetMidY(self.frame))
-        gameOverText.zPosition = 15
+        gameOverText.zPosition = 50
+        
+        self.addChild(gameOverText)
+        gameOverText.hidden = true
         
         // draw the start game to the scene
         self.addChild(startGameText)
@@ -104,7 +108,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         // set the positio of the bird
         bird.position = CGPoint(x: self.frame.size.width * 0.15, y: self.frame.size.height * 0.6)
-        //bird.physicsBody = SKPhysicsBody(texture: birdTexture, size: CGSize(width: birdTexture.size().width, height: birdTexture.size().height))
+        
+        // setup the sparkle particle
+        sparkEmitter.name = "sparkles"
+        sparkEmitter.zPosition = 40
+        sparkEmitter.targetNode = self
+        sparkEmitter.particleLifetime = 999
         
         // now run it's animation
         bird.runAction(makeFlap)
@@ -113,6 +122,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         
         // set the position of the bird to the forground
         bird.zPosition = 10
+        
+
         
 
         // add a backbground image and use BLF for the filtering
@@ -140,8 +151,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             movingBackground.runAction(movingAndReplacingBackground)
             moving.addChild(movingBackground)
         }
-        
-        
         
         
         //define ground object
@@ -227,7 +236,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         // move and remove pipes
         var moveAndRemovePipes = SKAction.repeatActionForever(SKAction.sequence([shiftPipes, scoreValue, removePipes]))
         
-        
         // creating the pipes
         let pipeDownTexture = SKTexture(imageNamed: "pipe1")
         let pipeUpTexture = SKTexture(imageNamed: "pipe2")
@@ -259,45 +267,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeUp.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(pipeUp)
         
-        
         pipePair.runAction(moveAndRemovePipes)
+        
         pipes.addChild(pipePair)
  
     }
-    
-    
-//     functions for the bird roation
-    
-//    func clamp(min: CGFloat, max: CGFloat, value: CGFloat) -> CGFloat {
-//        if( value > max ) {
-//            return max
-//        } else if( value < min ) {
-//            return min
-//        } else {
-//            return value
-//        }
-//    }
-//    
-//    override func update(currentTime: CFTimeInterval) {
-//        /* Called before each frame is rendered */
-//        bird.zRotation = self.clamp( -1, max: 0.5, value: bird.physicsBody!.velocity.dy * ( bird.physicsBody!.velocity.dy < 0 ? 0.003 : 0.001 ) )
-//    }
-
     
     // function to reset the scene
     
     func resetScene() {
         
-        // set the positio of the bird
+        // set the position of the bird
         bird.position = CGPoint(x: self.frame.size.width * 0.15, y: self.frame.size.height * 0.6)
         bird.physicsBody?.velocity = CGVectorMake( 0, 0 )
         bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
         bird.speed = 1.0
         bird.physicsBody?.allowsRotation = false
         bird.zRotation = 0.0
+        sparkEmitter.removeFromParent()
         
-        // reset all the pipes by removing them fromt the screen
+        // reset all the pipes by removing them from the screen
+
         pipes.removeAllChildren()
+        gameOverSound.stop()
+        self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
         
         // reset score
         score = 0
@@ -328,31 +321,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     func audioPreparation() {
         // set the soudn file name and extension
         var flap  = NSBundle.mainBundle().pathForResource("flap", ofType: "wav")
-//        var march = NSBundle.mainBundle().pathForResource("march", ofType: "mp3")
-        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
-        AVAudioSession.sharedInstance().setActive(true, error: nil)
+        var march = NSBundle.mainBundle().pathForResource("march", ofType: "wav")
+//        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+//        AVAudioSession.sharedInstance().setActive(true, error: nil)
         
         var error:NSError?
         flapSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: flap!), error: &error)
         flapSound.prepareToPlay()
         
-//        gameOverSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: march!), error: &error)
-//        gameOverSound.prepareToPlay()
-//        
+        gameOverSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: march!), error: &error)
+        gameOverSound.prepareToPlay()
+//
+    }
+    
+    func gameOverAudioPrep() {
+        var march = NSBundle.mainBundle().pathForResource("march", ofType: "mp3")
+        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+        AVAudioSession.sharedInstance().setActive(true, error: nil)
+        var error:NSError?
+        gameOverSound = AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: march!), error: &error)
+        gameOverSound.prepareToPlay()
+        
     }
     
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         /* Called when a touch begins */
         // set how high you want flappy to go
         if moving.speed > 0 {
-        
+            gameOverText.hidden = true
             println("Flappy is flying")
-        
+//            if score > 5 {
+//                moving.speed = moving.speed + 5
+//            } else if score > 20 {
+//                moving.speed = moving.speed + 5
+//            } else if score > 30 {
+//                moving.speed = moving.speed + 5
+//            }
         
             for touch : AnyObject in touches {
                 let location = touch.locationInNode(self)
                 bird.physicsBody?.velocity = CGVectorMake(0, 0)
                 bird.physicsBody?.applyImpulse(CGVectorMake(0, 80))
+                
                 
                 // play a flapping sound each time the bird is touched
                 flapSound.play()
@@ -376,22 +386,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                     bird.physicsBody = SKPhysicsBody(texture: birdTexture, size: CGSize(width: birdTexture.size().width, height: birdTexture.size().height))
                     bird.physicsBody?.dynamic = true
                     bird.physicsBody?.allowsRotation = false
+
                     // assgining collsionBitMask to the bird
                     bird.physicsBody?.categoryBitMask = birdCategory
                     bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
                 
                     // test to see if the bird hit the pipe
                     bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
-                    var timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
+                    self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
                     self.startGameText.removeFromParent()
-                
 
                 }
                 
                 if gameOverText.containsPoint(location) {
                     println("Gameover is being touched")
                     restart = true
-                    self.gameOverText.removeFromParent()
                 }
             }
         } else if restart {
@@ -401,7 +410,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     
     
     
-    // new function to detech when two physicsBody's touch each other
+    // new function to detect when two physicsBody's touch each other
     func didBeginContact(contact: SKPhysicsContact) {
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
@@ -410,11 +419,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
             // stop moving when you collide
             moving.speed = 0
             bird.physicsBody?.collisionBitMask = worldCategory
-            // show the gameover text
-//            self.addChild(gameOverText)
-            restart = true
+            gameOverText.hidden = false
             gameOverSound.play()
-            
+            let birdSpark = bird.childNodeWithName("sparkles")
+            if (birdSpark == nil) {
+                bird.addChild(sparkEmitter)
+            }
+            self.timer?.invalidate()
+            restart = true
+
         }
 
     }
