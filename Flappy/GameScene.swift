@@ -118,8 +118,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         // now run it's animation
         bird.runAction(makeFlap)
         
-        
-        
         // set the position of the bird to the forground
         bird.zPosition = 10
         
@@ -233,14 +231,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         let shiftPipes = SKAction.moveByX(-self.frame.width * 2, y: 0, duration: NSTimeInterval(self.frame.size.width / 100))
         let removePipes = SKAction.removeFromParent()
         
-        let  scoreValue = SKAction.runBlock { () -> Void in
-            self.score++
-            self.scoreLabel.text = "\(self.score)"
-            self.scoreLabel.zPosition = 15
-        }
-          
+//        let  scoreValue = SKAction.runBlock { () -> Void in
+//            self.score++
+//            self.scoreLabel.text = "\(self.score)"
+//            self.scoreLabel.zPosition = 15
+//        }
+        
         // move and remove pipes
-        var moveAndRemovePipes = SKAction.repeatActionForever(SKAction.sequence([shiftPipes, scoreValue, removePipes]))
+        var moveAndRemovePipes = SKAction.repeatActionForever(SKAction.sequence([shiftPipes, removePipes]))
         
         // creating the pipes
         let pipeDownTexture = SKTexture(imageNamed: "pipe1")
@@ -273,8 +271,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeUp.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(pipeUp)
         
-        pipePair.runAction(moveAndRemovePipes)
+
         
+        
+        // draw the box for scoring
+        
+        var scoreBox = SKNode()
+        scoreBox.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipeOffset)
+        scoreBox.physicsBody = SKPhysicsBody(rectangleOfSize: CGSizeMake(pipeDown.size.width, gap))
+        scoreBox.physicsBody?.dynamic = false
+        scoreBox.physicsBody?.categoryBitMask = scoreCategory
+        scoreBox.physicsBody?.contactTestBitMask = birdCategory
+        scoreBox.physicsBody?.collisionBitMask = 0
+        scoreBox.zPosition = 10
+        pipePair.addChild(scoreBox)
+        
+        pipePair.runAction(moveAndRemovePipes)
         pipes.addChild(pipePair)
  
     }
@@ -356,14 +368,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         if moving.speed > 0 {
             gameOverText.hidden = true
             println("Flappy is flying")
-            if score > 5 {
-                moving.speed = moving.speed + 2
-            } else if score > 20 {
-                moving.speed = moving.speed + 2
-            } else if score > 30 {
-                moving.speed = moving.speed + 2
-            }
-        
+//            if score > 5 {
+//                moving.speed = moving.speed + 2
+//            } else if score > 20 {
+//                moving.speed = moving.speed + 2
+//            } else if score > 30 {
+//                moving.speed = moving.speed + 2
+//            }
+//        
             for touch : AnyObject in touches {
                 let location = touch.locationInNode(self)
                 bird.physicsBody?.velocity = CGVectorMake(0, 0)
@@ -392,7 +404,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                     bird.physicsBody?.collisionBitMask = worldCategory | pipeCategory
                 
                     // test to see if the bird hit the pipe
-                    bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory
+                    bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory | scoreCategory
                     self.timer? .invalidate()
            
                     self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
@@ -413,7 +425,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     func didBeginContact(contact: SKPhysicsContact) {
         let contactMask = contact.bodyA.categoryBitMask | contact.bodyB.categoryBitMask
         
-        if (contact.bodyA.categoryBitMask & worldCategory) == worldCategory || (contact.bodyB.categoryBitMask & worldCategory) == worldCategory {
+        
+        if contact.bodyA.categoryBitMask == scoreCategory || contact.bodyB.categoryBitMask == scoreCategory {
+            score++
+            scoreLabel.text = "\(score)"
+            println("Scored")
+        }
+        
+        if contact.bodyA.categoryBitMask  == worldCategory || contact.bodyB.categoryBitMask == worldCategory {
             println("Bird has contact with a world object")
             // stop moving when you collide
             self.timer?.invalidate()

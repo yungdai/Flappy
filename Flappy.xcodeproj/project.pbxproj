@@ -10,8 +10,6 @@
 		1A8245041B0F729300308017 /* sparkles.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1A8245021B0F729300308017 /* sparkles.sks */; };
 		1A8245051B0F729300308017 /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A8245031B0F729300308017 /* spark.png */; };
 		1A82453D1B0F918700308017 /* flap.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1A82453C1B0F918700308017 /* flap.wav */; };
-		1A8245401B0F986A00308017 /* march.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1A82453F1B0F986A00308017 /* march.mp3 */; };
-		1A8245421B0FB14000308017 /* empire2.mid in Resources */ = {isa = PBXBuildFile; fileRef = 1A8245411B0FB14000308017 /* empire2.mid */; };
 		1A8245441B0FB88900308017 /* march.wav in Resources */ = {isa = PBXBuildFile; fileRef = 1A8245431B0FB88900308017 /* march.wav */; };
 		1AEE2A4E1B0CCEA30032F45A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AEE2A4D1B0CCEA30032F45A /* AppDelegate.swift */; };
 		1AEE2A501B0CCEA30032F45A /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 1AEE2A4F1B0CCEA30032F45A /* GameScene.sks */; };
@@ -37,8 +35,6 @@
 		1A8245021B0F729300308017 /* sparkles.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = sparkles.sks; sourceTree = "<group>"; };
 		1A8245031B0F729300308017 /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		1A82453C1B0F918700308017 /* flap.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = flap.wav; sourceTree = "<group>"; };
-		1A82453F1B0F986A00308017 /* march.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = march.mp3; path = FlappyTests/march.mp3; sourceTree = SOURCE_ROOT; };
-		1A8245411B0FB14000308017 /* empire2.mid */ = {isa = PBXFileReference; lastKnownFileType = audio.midi; path = empire2.mid; sourceTree = "<group>"; };
 		1A8245431B0FB88900308017 /* march.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = march.wav; sourceTree = "<group>"; };
 		1AEE2A481B0CCEA30032F45A /* Flappy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flappy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AEE2A4C1B0CCEA30032F45A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -110,9 +106,7 @@
 		1AEE2A4B1B0CCEA30032F45A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				1A8245411B0FB14000308017 /* empire2.mid */,
 				1A8245431B0FB88900308017 /* march.wav */,
-				1A82453F1B0F986A00308017 /* march.mp3 */,
 				1A82453C1B0F918700308017 /* flap.wav */,
 				1AEE2A4C1B0CCEA30032F45A /* Info.plist */,
 			);
@@ -224,7 +218,6 @@
 				1AEE2A501B0CCEA30032F45A /* GameScene.sks in Resources */,
 				1AEE2A571B0CCEA30032F45A /* Main.storyboard in Resources */,
 				1A82453D1B0F918700308017 /* flap.wav in Resources */,
-				1A8245421B0FB14000308017 /* empire2.mid in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -232,7 +225,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1A8245401B0F986A00308017 /* march.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
