@@ -203,7 +203,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
 
         // draw the bird onto the screen
         self.addChild(bird)
-        
+        self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
 
     }
     
@@ -237,15 +237,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeDown.zPosition = 10
         pipeUp.zPosition = 10
         pipePair.zPosition = 10
-        pipePair.physicsBody?.categoryBitMask = pipeCategory | worldCategory
-        
+        pipePair.physicsBody?.categoryBitMask = pipeCategory
         
         // drawing a set of pipes onto the screen
         pipeDown.physicsBody = SKPhysicsBody(rectangleOfSize: pipeDown.size)
         pipeDown.physicsBody?.dynamic = false
         pipeDown.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) + pipeDown.size.height / 2 + gap / 2 + pipeOffset)
         // if the pipe contacts the bird
-        pipeDown.physicsBody?.categoryBitMask = pipeCategory | worldCategory
+        pipeDown.physicsBody?.categoryBitMask = pipeCategory
         pipeDown.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(pipeDown)
 
@@ -254,7 +253,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         pipeUp.physicsBody?.dynamic = false
         pipeUp.position = CGPoint(x: CGRectGetMidX(self.frame) + self.frame.size.width, y: CGRectGetMidY(self.frame) - pipeUp.size.height / 2 - gap / 2 + pipeOffset)
         // if the pipe contacts the bird
-        pipeUp.physicsBody?.categoryBitMask = pipeCategory | worldCategory
+        pipeUp.physicsBody?.categoryBitMask = pipeCategory
         pipeUp.physicsBody?.contactTestBitMask = birdCategory
         pipePair.addChild(pipeUp)
         
@@ -291,10 +290,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
         sparkEmitter.removeFromParent()
         
         // reset all the pipes by removing them from the screen
-
         pipes.removeAllChildren()
         gameOverSound.stop()
-        self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
         
         // reset score
         score = 0
@@ -367,12 +364,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
                 
                     // test to see if the bird hit the pipe
                     bird.physicsBody?.contactTestBitMask = worldCategory | pipeCategory | scoreCategory
+
+                    moving.speed = 1
                     
-                    
-                    // check if the timer is one, if so invalidate it
-                    self.timer?.invalidate()
-           
-                    self.timer = NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: ("makePipes"), userInfo: nil, repeats: true)
                     self.playButton.removeFromParent()
 
                 }
@@ -388,19 +382,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate //SKPhysicsContactDelegate is
     // new function to detect when two physicsBody's touch each other
     func didBeginContact(contact: SKPhysicsContact) {
         
-        if (contact.bodyA.categoryBitMask & scoreCategory) == scoreCategory || (contact.bodyB.categoryBitMask & scoreCategory) == scoreCategory {
+        if contact.bodyA.categoryBitMask == scoreCategory || contact.bodyB.categoryBitMask  == scoreCategory {
             score++
             scoreLabel.text = "\(score)"
             println("Scored")
         }
         
-        if (contact.bodyA.categoryBitMask & worldCategory) == worldCategory || (contact.bodyB.categoryBitMask & worldCategory) == worldCategory {
+        if (contact.bodyA.categoryBitMask & pipeCategory) == pipeCategory || (contact.bodyB.categoryBitMask & pipeCategory) == pipeCategory {
             println("Bird has contact with a world object")
             // stop moving when you collide
             self.timer?.invalidate()
             moving.speed = 0
 
-            bird.physicsBody?.collisionBitMask = worldCategory
+            bird.physicsBody?.collisionBitMask = pipeCategory
             gameOverText.hidden = false
             gameOverSound.play()
             let birdSpark = bird.childNodeWithName("sparkles")
